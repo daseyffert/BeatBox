@@ -30,6 +30,7 @@ public class BeatBoxFragment extends Fragment {
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
         super.onCreate(onSavedInstanceState);
+        setRetainInstance(true);
 
         mBeatBox = new BeatBox(getActivity());
     }
@@ -51,10 +52,16 @@ public class BeatBoxFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mBeatBox.release();
+    }
+
     /**
      * Step 2 Create the ViewHolder Class for the items in each recyclerView
      */
-    private class SoundHelper extends RecyclerView.ViewHolder {
+    private class SoundHelper extends RecyclerView.ViewHolder implements View.OnClickListener{
         //2.1 initialize the objects contained in View
         private Button mButton;
         private Sound mSound;
@@ -63,11 +70,17 @@ public class BeatBoxFragment extends Fragment {
             super(inflater.inflate(R.layout.list_item_sound, container, false));
 
             mButton = (Button) itemView.findViewById(R.id.list_item_sound_button);
+            mButton.setOnClickListener(this);
         }
         //2.3  create a method to bind sound
         public void bindSound(Sound sound) {
             mSound = sound;
             mButton.setText(mSound.getName());
+        }
+        //2.4 implement onClick method to play the sound from BeatBox
+        @Override
+        public void onClick(View v) {
+            mBeatBox.play(mSound);
         }
     }
 
